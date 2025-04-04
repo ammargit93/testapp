@@ -6,53 +6,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout repo
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: 🐍 Set up Python
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
-    - name: 🧰 Install system dependencies
+    - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y \
-          build-essential \
-          git zip unzip \
-          openjdk-17-jdk \
-          python3-pip \
-          libncurses5 \
-          libstdc++6 \
-          libffi-dev \
-          libssl-dev \
-          pkg-config \
-          libgl1-mesa-dev \
-          libgles2-mesa-dev \
-          libsqlite3-dev \
-          zlib1g-dev
-
-    - name: 📦 Install Python dependencies
-      run: |
+        sudo apt install -y build-essential ccache libncurses5 zip unzip openjdk-17-jdk git python3-pip
         pip install --upgrade pip
         pip install buildozer cython
 
-    - name: ⚙️ Initialize Buildozer if needed
+    - name: Install Buildozer Android dependencies
       run: |
-        if [ ! -f buildozer.spec ]; then
-          buildozer init
-        fi
-
-    - name: 🏗️ Build APK
-      run: |
+        buildozer android clean
         buildozer android debug
 
-    - name: 📤 Upload APK artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
-        name: kivy-apk
+        name: my-kivy-app-apk
         path: bin/*.apk
