@@ -1,0 +1,188 @@
+ScreenManager:
+    LoginScreen:
+        name: "login_screen"
+    SignupScreen:
+        name: "signup_screen"
+    OTPScreen:
+        name: "otp_screen"
+
+<SignupScreen>:
+    md_bg_color: 0.95, 0.95, 0.95, 1
+
+    MDCard:
+        size_hint: 0.8, 0.85
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 4
+        radius: [20, 20, 20, 20]
+        md_bg_color: 1, 1, 1, 1
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(15)
+            padding: dp(30)
+
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(40)
+
+                MDIconButton:
+                    icon: "arrow-left"
+                    theme_text_color: "Custom"
+                    text_color: 1, 0.4, 0.2, 1
+                    on_release: app.root.current = "login_screen"
+
+            MDLabel:
+                text: "Sign up"
+                font_size: "32sp"
+                halign: "center"
+                theme_text_color: "Custom"
+                text_color: 1, 0.4, 0.2, 1
+
+            MDTextField:
+                id: full_name
+                hint_text: "Enter your full name"
+                icon_left: "account"
+                mode: "rectangle"
+
+            MDTextField:
+                id: phone_number
+                hint_text: "Enter your phone number"
+                icon_left: "phone"
+                mode: "rectangle"
+                input_filter: "int"
+
+            MDTextField:
+                id: email
+                hint_text: "Enter your Email"
+                icon_left: "email"
+                mode: "rectangle"
+                # input_filter: "int"
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: dp(10)
+
+                MDLabel:
+                    text: "Select User Type"
+                    theme_text_color: "Secondary"
+
+                MDDropDownItem:
+                    id: user_type
+                    text: "Select"
+                    on_release: root.open_menu(self)
+
+            MDRaisedButton:
+                text: "Sign Up"
+                md_bg_color: 1, 0.6, 0.2, 1
+                text_color: 1, 1, 1, 1
+                size_hint: 1, None
+                height: dp(50)
+                elevation: 3
+                on_release: root.signup()
+
+<LoginScreen>:
+    md_bg_color: 0.95, 0.95, 0.95, 1
+
+    MDCard:
+        size_hint: 0.8, 0.5
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 4
+        radius: [20, 20, 20, 20]
+        md_bg_color: 1, 1, 1, 1
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(15)
+            padding: dp(30)
+
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(40)
+
+                MDIconButton:
+                    icon: "arrow-left"
+                    theme_text_color: "Custom"
+                    text_color: 1, 0.4, 0.2, 1
+                    on_release: app.root.current = "signup_screen"
+
+            MDLabel:
+                text: "Login"
+                font_size: "32sp"
+                halign: "center"
+                theme_text_color: "Custom"
+                text_color: 1, 0.4, 0.2, 1
+
+            MDTextField:
+                id: phone_number
+                hint_text: "Enter your phone number"
+                icon_left: "phone"
+                mode: "rectangle"
+                input_filter: lambda text, from_undo: text if text in "+0123456789" else ""
+
+            MDRaisedButton:
+                text: "Next"
+                md_bg_color: 1, 0.6, 0.2, 1
+                text_color: 1, 1, 1, 1
+                size_hint: 1, None
+                height: dp(50)
+                elevation: 3
+                on_release: app.root.current = "otp_screen"
+            MDRaisedButton:
+                text: "Biometric Login"
+                md_bg_color: 1, 0.6, 0.2, 1
+                text_color: 1, 1, 1, 1
+                size_hint: 1, None
+                height: dp(50)
+                elevation: 3
+                # on_release: root.go_to_biometric()
+
+<OTPScreen>:
+    md_bg_color: 0.95, 0.95, 0.95, 1
+
+    MDCard:
+        size_hint: 0.8, 0.5
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        elevation: 4
+        radius: [20, 20, 20, 20]
+        md_bg_color: 1, 1, 1, 1
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: dp(15)
+            padding: dp(30)
+
+            MDBoxLayout:
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(40)
+
+                MDIconButton:
+                    icon: "arrow-left"
+                    theme_text_color: "Custom"
+                    text_color: 1, 0.4, 0.2, 1
+                    on_release: app.root.current = "login_screen"
+
+            MDLabel:
+                text: "Enter OTP"
+                font_size: "28sp"
+                halign: "center"
+                theme_text_color: "Custom"
+                text_color: 1, 0.4, 0.2, 1
+
+            MDTextField:
+                id: otp
+                hint_text: "Enter OTP sent to your phone"
+                icon_left: "key"
+                mode: "rectangle"
+                input_filter: "int"
+
+            MDRaisedButton:
+                text: "Verify"
+                md_bg_color: 1, 0.6, 0.2, 1
+                text_color: 1, 1, 1, 1
+                size_hint: 1, None
+                height: dp(50)
+                elevation: 3
+                on_release: app.root.current = "guest_home"
