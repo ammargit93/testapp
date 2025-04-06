@@ -3,7 +3,10 @@ from kivy.metrics import dp
 from kivy.properties import ListProperty
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
-
+import math
+import time
+from kivy.utils import platform
+from plyer import accelerometer  
 from kivymd.app import MDApp
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.dialog import MDDialog
@@ -15,8 +18,8 @@ from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.screen import MDScreen
 
 class NotePopupContent(BoxLayout):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def _init_(self, **kwargs):
+        super()._init_(**kwargs)
         self.orientation = "vertical"
         self.spacing = dp(10)
         self.padding = dp(10)
@@ -50,13 +53,65 @@ class NotePopupContent(BoxLayout):
 class GuestHomeScreen(Screen):
     notes = ListProperty([])
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # Fixed __init__
         super().__init__(**kwargs)
         self.dialog = None
         self.notes = []
+        self._shake_threshold = 20
+        self._last_reading = [0, 0, 0]
+        self._shake_event = None
+        self.shake_times = []
 
     def on_enter(self):
         Clock.schedule_once(self._load_notes)
+        if platform == 'android':
+            try:
+                accelerometer.enable()
+                self._shake_event = Clock.schedule_interval(self.detect_shake, 0.2)
+            except:
+                print("Accelerometer not supported.")
+
+            
+    def change_screen(self, screen_name):
+        self.manager.current = screen_name
+        
+    def on_leave(self):
+        if platform == 'android':
+            try:
+                accelerometer.disable()
+                if self._shake_event:
+                    self._shake_event.cancel()
+            except:
+                pass
+
+    def change_screen(self, screen_name):
+        self.manager.current = screen_name
+        
+    def detect_shake(self, dt):
+        try:
+            values = accelerometer.acceleration
+            if not values:
+                return
+
+            x, y, z = values
+            magnitude = math.sqrt(x**2 + y**2 + z**2)
+
+            # Shake for clearing notes (multiple quick shakes)
+            if magnitude > self._shake_threshold:
+                now = time.time()
+                self.shake_times.append(now)
+                self.shake_times = [t for t in self.shake_times if now - t < 2]
+
+                if len(self.shake_times) >= 3:
+                    self.shake_times = []
+                    self.clear_notes()
+
+            # Strong horizontal shake for logout
+            if abs(x) > 30:  # Tune this value if needed
+                self.logout()
+
+        except Exception as e:
+            print("Error in detect_shake:", e)
 
     def nav_to_chatbot(self):
         self.manager.current = "chatbot_screen"
